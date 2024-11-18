@@ -363,16 +363,13 @@ return (
               </Button>
             </div>
           ) : (
-            <>
-              <h1 className="text-lg font-semibold mr-4">會計管理系統</h1>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSearchExpanded(true)}
-              >
-                <Search className="h-5 w-5" />
-              </Button>
-            </>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearchExpanded(true)}
+            >
+              <Search className="h-5 w-5" />
+            </Button>
           )}
         </div>
         <div className="flex items-center gap-2">
