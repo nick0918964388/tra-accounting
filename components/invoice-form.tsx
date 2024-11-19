@@ -40,6 +40,7 @@ import Link from 'next/link'
 import { ChevronRight, Home } from 'lucide-react'
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { VendorSelectDialog, type Vendor } from "@/components/vendor-select-dialog"
 
 export function InvoiceForm() {
   const [status, setStatus] = useState("incomplete")
@@ -51,6 +52,9 @@ export function InvoiceForm() {
   const [selectedAddSigner, setSelectedAddSigner] = useState("")
   const [addSignPosition, setAddSignPosition] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isVendorDialogOpen, setIsVendorDialogOpen] = useState(false)
+  const [searchVendor, setSearchVendor] = useState("")
+  const [selectedVendor, setSelectedVendor] = useState<Vendor | null>(null)
 
   useEffect(() => {
     const loadData = async () => {
@@ -410,7 +414,7 @@ export function InvoiceForm() {
               href="/" 
               className="hover:text-foreground"
             >
-              應付帳款
+              總帳管理
             </Link>
             <ChevronRight className="h-4 w-4" />
             <span className="font-medium text-foreground">發票輸入作業</span>
@@ -548,29 +552,50 @@ export function InvoiceForm() {
                   <div className="space-y-2">
                     <Label htmlFor="vendorId">廠商編號</Label>
                     <div className="flex space-x-2">
-                      <Input id="vendorId" />
-                      <Button variant="secondary">查詢</Button>
+                      <Input 
+                        id="vendorId" 
+                        value={selectedVendor?.id || ""}
+                        readOnly
+                      />
+                      <Button 
+                        variant="secondary" 
+                        onClick={() => setIsVendorDialogOpen(true)}
+                      >
+                        查詢
+                      </Button>
                     </div>
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="vendorName">廠商名稱</Label>
-                    <Input id="vendorName" />
+                    <Input 
+                      id="vendorName" 
+                      value={selectedVendor?.name || ""}
+                      readOnly
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="unifiedNumber">統一編號</Label>
-                    <Input id="unifiedNumber" />
+                    <Input 
+                      id="unifiedNumber" 
+                      value={selectedVendor?.taxId || ""}
+                      readOnly
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="approver">授權人員</Label>
                     <Select>
                       <SelectTrigger>
-                        <SelectValue placeholder="請選擇" />
+                        <SelectValue placeholder="請選擇" />                        
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="default">請選擇</SelectItem>
+                        <SelectItem value="chen">陳先生</SelectItem>
+                        <SelectItem value="lin">林小姐</SelectItem>
+                        <SelectItem value="wang">王先生</SelectItem>
+                        <SelectItem value="zhang">張小姐</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -619,7 +644,7 @@ export function InvoiceForm() {
 
                   <div className="space-y-2">
                     <Label htmlFor="totalAmount">銷售總金額</Label>
-                    <Input id="totalAmount" type="number" disabled />
+                    <Input id="totalAmount" type="number"  />
                   </div>
 
                   <div className="space-y-2">
@@ -640,6 +665,11 @@ export function InvoiceForm() {
             
           </div>
           <SignDialog />
+          <VendorSelectDialog
+            open={isVendorDialogOpen}
+            onOpenChange={setIsVendorDialogOpen}
+            onSelect={setSelectedVendor}
+          />
         </>
       )}
     </div>
