@@ -39,6 +39,7 @@ import {
 import Link from 'next/link'
 import { ChevronRight, Home } from 'lucide-react'
 import { Textarea } from "@/components/ui/textarea"
+import { Switch } from "@/components/ui/switch"
 
 export function InvoiceForm() {
   const [status, setStatus] = useState("incomplete")
@@ -462,231 +463,181 @@ export function InvoiceForm() {
             {/* Basic Information Section */}
             <Card>
               <CardContent className="p-6">
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   <div className="space-y-2">
-                    <Label htmlFor="billingType">帳單類型</Label>
-                    <div className="flex gap-2">
-                      <Input id="billingType" className="w-24" />
-                      <Input className="flex-1" />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="billingCategory">帳單類別</Label>
-                    <Select defaultValue="default">
+                    <Label htmlFor="companyId">公司別</Label>
+                    <Select>
                       <SelectTrigger>
-                        <SelectValue placeholder="選擇類別" />
+                        <SelectValue placeholder="請選擇" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="default">預設類別</SelectItem>
+                        <SelectItem value="default">請選擇</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="billingPerson">開立人</Label>
-                    <Input id="billingPerson" defaultValue="KEVIN-CS" />
-                  </div>
-                </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                   <div className="space-y-2">
-                    <Label htmlFor="invoiceNum">發票號碼</Label>
-                    <Input id="invoiceNum" />
+                    <Label htmlFor="invoiceFormat">發票格式</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="請選擇" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">請選擇</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceNumber">發票號碼</Label>
+                    <Input id="invoiceNumber" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="otherNumber">其他憑證號碼</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="請選擇" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">請選擇</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
                   <div className="space-y-2">
                     <Label htmlFor="invoiceDate">發票日期</Label>
-                    <Input id="invoiceDate" defaultValue={currentDate} />
+                    <Input id="invoiceDate" type="date" />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="glDate">總帳日期</Label>
-                    <Input id="glDate" defaultValue={currentDate} />
-                  </div>
-                </div>
 
-                <div className="mt-4 grid gap-4 md:grid-cols-3">
                   <div className="space-y-2">
-                    <Label htmlFor="currency">幣別</Label>
-                    <Input id="currency" defaultValue="NTD" className="w-24" />
+                    <Label htmlFor="accountingMonth">申報所屬年月</Label>
+                    <Input id="accountingMonth" type="month" />
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="taxCode">稅碼</Label>
-                    <Select defaultValue="vat">
+                    <Label>課稅別</Label>
+                    <div className="flex space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="taxed" name="taxType" value="taxed" />
+                        <Label htmlFor="taxed">應稅</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="zeroTax" name="taxType" value="zeroTax" />
+                        <Label htmlFor="zeroTax">零稅率</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="taxFree" name="taxType" value="taxFree" />
+                        <Label htmlFor="taxFree">免稅</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="taxCode">稅扣代號</Label>
+                    <Select>
                       <SelectTrigger>
-                        <SelectValue placeholder="選擇稅碼" />
+                        <SelectValue placeholder="請選擇" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="vat">應稅</SelectItem>
+                        <SelectItem value="default">請選擇</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
+
                   <div className="space-y-2">
-                    <Label htmlFor="costCenter">成本中心</Label>
-                    <Input id="costCenter" />
+                    <Label htmlFor="vendorId">廠商編號</Label>
+                    <div className="flex space-x-2">
+                      <Input id="vendorId" />
+                      <Button variant="secondary">查詢</Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="vendorName">廠商名稱</Label>
+                    <Input id="vendorName" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="unifiedNumber">統一編號</Label>
+                    <Input id="unifiedNumber" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="approver">授權人員</Label>
+                    <Select>
+                      <SelectTrigger>
+                        <SelectValue placeholder="請選擇" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="default">請選擇</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="invoiceType">發票別</Label>
+                    <div className="flex space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="receipt" name="invoiceType" value="receipt" />
+                        <Label htmlFor="receipt">收據</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="invoice" name="invoiceType" value="invoice" />
+                        <Label htmlFor="invoice">收入</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="substitute" name="invoiceType" value="substitute" />
+                        <Label htmlFor="substitute">代收代付</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="format">格式</Label>
+                    <div className="flex space-x-4">
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="electronic" name="format" value="electronic" />
+                        <Label htmlFor="electronic">電子</Label>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <input type="radio" id="paper" name="format" value="paper" />
+                        <Label htmlFor="paper">傳統</Label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="amount">銷售金額(未稅)</Label>
+                    <Input id="amount" type="number" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="taxAmount">營業稅額</Label>
+                    <Input id="taxAmount" type="number" />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="totalAmount">銷售總金額</Label>
+                    <Input id="totalAmount" type="number" disabled />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="status">開/關帳狀態</Label>
+                    <div className="flex items-center space-x-2">
+                      <Switch id="status" />
+                    </div>
+                  </div>
+
+                  <div className="col-span-full space-y-2">
+                    <Label htmlFor="remark">備註</Label>
+                    <Textarea id="remark" placeholder="請輸入備註..." />
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Amount Sections */}
-            <div className="grid gap-4 md:grid-cols-3">
-              {/* Invoice Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">發票</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="invoiceSalesAmount">銷售金額</Label>
-                      <Input id="invoiceSalesAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="invoiceTaxAmount">稅額</Label>
-                      <Input id="invoiceTaxAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="invoiceTotalAmount">總金額</Label>
-                      <Input id="invoiceTotalAmount" type="number" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Function Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">功能</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="functionSalesAmount">銷售金額</Label>
-                      <Input id="functionSalesAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="functionTaxAmount">稅額</Label>
-                      <Input id="functionTaxAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="functionTotalAmount">總金額</Label>
-                      <Input id="functionTotalAmount" type="number" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* GUI Section */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">GUI</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="guiSalesAmount">銷售金額</Label>
-                      <Input id="guiSalesAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="guiTaxAmount">稅額</Label>
-                      <Input id="guiTaxAmount" type="number" />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="guiTotalAmount">總金額</Label>
-                      <Input id="guiTotalAmount" type="number" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Receipt Detail Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">收據明細 GUI/VAT</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>單據類型</TableHead>
-                        <TableHead>GUI日期</TableHead>
-                        <TableHead>GUI號碼</TableHead>
-                        <TableHead>稅碼</TableHead>
-                        <TableHead>GUI類型</TableHead>
-                        <TableHead>幣別</TableHead>
-                        <TableHead>GUI匯率</TableHead>
-                        <TableHead>銷售金額</TableHead>
-                        <TableHead>稅額</TableHead>
-                        <TableHead>總金額</TableHead>
-                        <TableHead>廠商編號</TableHead>
-                        <TableHead>廠商名稱</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>
-                          <Select defaultValue="tw">
-                            <SelectTrigger>
-                              <SelectValue placeholder="選擇類型" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="tw">TW_發票</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input defaultValue={currentDate} />
-                        </TableCell>
-                        <TableCell>
-                          <Input />
-                        </TableCell>
-                        <TableCell>
-                          <Select defaultValue="vat">
-                            <SelectTrigger>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="vat">應稅</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Select>
-                            <SelectTrigger>
-                              <SelectValue placeholder="選擇類型" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="standard">標準</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Input defaultValue="NTD" />
-                        </TableCell>
-                        <TableCell>
-                          <Input defaultValue="1" />
-                        </TableCell>
-                        <TableCell>
-                          <Input type="number" />
-                        </TableCell>
-                        <TableCell>
-                          <Input type="number" />
-                        </TableCell>
-                        <TableCell>
-                          <Input type="number" />
-                        </TableCell>
-                        <TableCell>
-                          <Input />
-                        </TableCell>
-                        <TableCell>
-                          <Input />
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                </div>
-              </CardContent>
-            </Card>
+            
           </div>
           <SignDialog />
         </>

@@ -100,6 +100,7 @@ const tabs = [
   { id: "payable", label: "應付帳款", icon: <Receipt className="h-4 w-4" /> },
   { id: "receivable", label: "應收帳款", icon: <CreditCard className="h-4 w-4" /> },
   { id: "ledger", label: "總帳管理", icon: <BookOpen className="h-4 w-4" /> },
+  { id: "payable-ledger", label: "應付立帳", icon: <BookOpen className="h-4 w-4" /> },
 ]
 
 const loadTasks = async () => {
@@ -313,8 +314,7 @@ return (
             </CollapsibleTrigger>
             <CollapsibleContent className="ml-4">
               {sidebarOpen && (
-                <>
-                  <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
+                <>                  
                   <Link href="/invoice" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">
                       發票管理
@@ -333,6 +333,28 @@ return (
             <BookOpen className="h-4 w-4" />
             {sidebarOpen && <span>總帳管理</span>}
           </Button>
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+                <Receipt className="h-4 w-4" />
+                {sidebarOpen && (
+                  <>
+                    <span className="flex-1 text-left">應付立帳</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="ml-4">
+              {sidebarOpen && (
+                <>
+                  <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
+                  
+                  
+                </>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </nav>
       </div>
     </div>
