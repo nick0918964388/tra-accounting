@@ -79,10 +79,9 @@ const budgetComparisonData = [
 ]
 
 const departmentBudgetData = [
-  { name: "富岡機廠", amount: 350000 },
-  { name: "潮州機廠", amount: 320000 },
-  { name: "花蓮機廠", amount: 280000 },
-  
+  { name: "富岡機廠", budget: 350000, actual: 320000 },
+  { name: "潮州機廠", budget: 320000, actual: 310000 },
+  { name: "花蓮機廠", budget: 280000, actual: 260000 },
 ]
 
 const projectPlanData = [
@@ -96,11 +95,11 @@ const projectPlanData = [
 ]
 
 const tabs = [
-  { id: "budget", label: "預算", icon: <FileText className="h-4 w-4" /> },
-  { id: "payable", label: "應付帳款", icon: <Receipt className="h-4 w-4" /> },
-  { id: "receivable", label: "應收帳款", icon: <CreditCard className="h-4 w-4" /> },
+  { id: "budget", label: "預算管理", icon: <FileText className="h-4 w-4" /> },
+  { id: "payable", label: "應付帳款管理", icon: <Receipt className="h-4 w-4" /> },
+  { id: "receivable", label: "應收帳款管理", icon: <CreditCard className="h-4 w-4" /> },
   { id: "ledger", label: "總帳管理", icon: <BookOpen className="h-4 w-4" /> },
-  { id: "payable-ledger", label: "應付立帳", icon: <BookOpen className="h-4 w-4" /> },
+  { id: "ledger", label: "發票管理", icon: <BookOpen className="h-4 w-4" /> },
 ]
 
 const loadTasks = async () => {
@@ -171,42 +170,44 @@ const renderBudgetComparisonChart = (height: number = 300) => (
 
 const renderDepartmentBudgetChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
-    <BarChart data={departmentBudgetData}>
-      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+    <BarChart 
+      data={departmentBudgetData}
+      layout="vertical"
+      barGap={8}
+    >
+      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
       <XAxis 
-        dataKey="name"
-        axisLine={false}
-        tickLine={false}
-        tick={{ fill: '#888888' }}
-      />
-      <YAxis 
+        type="number"
         axisLine={false}
         tickLine={false}
         tick={{ fill: '#888888' }}
         tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
       />
+      <YAxis 
+        type="category"
+        dataKey="name"
+        axisLine={false}
+        tickLine={false}
+        tick={{ fill: '#888888' }}
+        width={80}
+      />
       <Tooltip 
         formatter={(value) => `${(Number(value) / 1000).toFixed(1)}k`}
         labelStyle={{ color: '#888888' }}
       />
+      <Legend />
       <Bar 
-        dataKey="amount" 
+        dataKey="budget" 
         fill="#4F46E5"
-        radius={[4, 4, 0, 0]}
-      >
-        {departmentBudgetData.map((entry, index) => (
-          <Cell 
-            key={`cell-${index}`} 
-            fill={[
-              '#4F46E5',  // Deep blue
-              '#EAB308',  // Yellow
-              '#93C5FD',  // Light blue
-              '#FEF3C7',  // Light yellow
-              '#1E3A8A',  // Navy
-            ][index % 5]} 
-          />
-        ))}
-      </Bar>
+        name="預算"
+        radius={[0, 4, 4, 0]}
+      />
+      <Bar 
+        dataKey="actual" 
+        fill="#10b981"
+        name="實際"
+        radius={[0, 4, 4, 0]}
+      />
     </BarChart>
   </ResponsiveContainer>
 )
@@ -306,7 +307,34 @@ return (
                 <Receipt className="h-4 w-4" />
                 {sidebarOpen && (
                   <>
-                    <span className="flex-1 text-left">應付帳款</span>
+                    <span className="flex-1 text-left">應付帳款管理</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            
+            <CollapsibleContent className="ml-4">
+              {sidebarOpen && (
+                <>                                                    
+                  <Button variant="ghost" className="w-full justify-start">應付立帳</Button>
+                  <Button variant="ghost" className="w-full justify-start">付款作業</Button>
+                  <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
+                </>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+          <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+            <CreditCard className="h-4 w-4" />
+            {sidebarOpen && <span>應收帳款管理</span>}
+          </Button>          
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+                <Receipt className="h-4 w-4" />
+                {sidebarOpen && (
+                  <>
+                    <span className="flex-1 text-left">總帳管理</span>
                     <ChevronDown className="h-4 w-4" />
                   </>
                 )}
@@ -320,41 +348,12 @@ return (
                       發票管理
                     </Button>
                   </Link>
-                  <Button variant="ghost" className="w-full justify-start">付款作業</Button>
-                </>
-              )}
-            </CollapsibleContent>
-          </Collapsible>
-          <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
-            <CreditCard className="h-4 w-4" />
-            {sidebarOpen && <span>應收帳款</span>}
-          </Button>
-          <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
-            <BookOpen className="h-4 w-4" />
-            {sidebarOpen && <span>總帳管理</span>}
-          </Button>
-          <Collapsible>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
-                <Receipt className="h-4 w-4" />
-                {sidebarOpen && (
-                  <>
-                    <span className="flex-1 text-left">應付立帳</span>
-                    <ChevronDown className="h-4 w-4" />
-                  </>
-                )}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="ml-4">
-              {sidebarOpen && (
-                <>
-                  <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
-                  
                   
                 </>
               )}
             </CollapsibleContent>
           </Collapsible>
+          
         </nav>
       </div>
     </div>
@@ -460,7 +459,7 @@ return (
               <Card className="md:col-span-1 lg:col-span-1">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
-                    <CardTitle className="text-base font-semibold">預算計畫與實際比較趨勢</CardTitle>
+                    <CardTitle className="text-base font-semibold">預算與實際比較趨勢</CardTitle>
                     <p className="text-sm text-muted-foreground">計畫編號: 951113021C141</p>
                   </div>
                   <div className="flex gap-2">
@@ -483,8 +482,8 @@ return (
               <Card className="md:col-span-1 lg:col-span-1">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
-                    <CardTitle className="text-base font-semibold">部門預算分配</CardTitle>
-                    <p className="text-sm text-muted-foreground">各機廠預算統計</p>
+                    <CardTitle className="text-base font-semibold">部門預算與實際比較</CardTitle>
+                    <p className="text-sm text-muted-foreground">各機廠預算/實際</p>
                   </div>
                   <div className="flex gap-2">
                     <Button
