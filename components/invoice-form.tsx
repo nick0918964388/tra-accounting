@@ -534,17 +534,7 @@ export function InvoiceForm() {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="taxCode">稅扣代號</Label>
-                    <Select>
-                      <SelectTrigger>
-                        <SelectValue placeholder="請選擇" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="default">請選擇</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  
 
                   <div className="space-y-2">
                     <Label htmlFor="vendorId">廠商編號</Label>
@@ -631,17 +621,38 @@ export function InvoiceForm() {
 
                   <div className="space-y-2">
                     <Label htmlFor="amount">銷售金額(未稅)</Label>
-                    <Input id="amount" type="number" />
+                    <Input 
+                      id="amount" 
+                      type="text"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d]/g, '')
+                        e.target.value = value ? Number(value).toLocaleString() : ''
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="taxAmount">營業稅額</Label>
-                    <Input id="taxAmount" type="number" />
+                    <Input 
+                      id="taxAmount" 
+                      type="text"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d]/g, '')
+                        e.target.value = value ? Number(value).toLocaleString() : ''
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
                     <Label htmlFor="totalAmount">銷售總金額</Label>
-                    <Input id="totalAmount" type="number"  />
+                    <Input 
+                      id="totalAmount" 
+                      type="text"
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/[^\d]/g, '')
+                        e.target.value = value ? Number(value).toLocaleString() : ''
+                      }}
+                    />
                   </div>
 
                   <div className="space-y-2">
