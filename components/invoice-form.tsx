@@ -410,13 +410,8 @@ export function InvoiceForm() {
               首頁
             </Link>
             <ChevronRight className="h-4 w-4" />
-            <Link 
-              href="/" 
-              className="hover:text-foreground"
-            >
-              總帳管理
-            </Link>
-            <ChevronRight className="h-4 w-4" />
+            
+            
             <span className="font-medium text-foreground">發票輸入作業</span>
           </div>
 
@@ -468,7 +463,7 @@ export function InvoiceForm() {
             <Card>
               <CardContent className="p-6">
                 <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                  <div className="space-y-2">
+                  {/* <div className="space-y-2">
                     <Label htmlFor="companyId">公司別</Label>
                     <Select>
                       <SelectTrigger>
@@ -478,7 +473,7 @@ export function InvoiceForm() {
                         <SelectItem value="default">請選擇</SelectItem>
                       </SelectContent>
                     </Select>
-                  </div>
+                  </div> */}
 
                   <div className="space-y-2">
                     <Label htmlFor="invoiceFormat">發票格式</Label>
@@ -488,6 +483,8 @@ export function InvoiceForm() {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="default">請選擇</SelectItem>
+                        <SelectItem value="3paper">21 統一發票(三聯式)</SelectItem>
+                        <SelectItem value="electronic">電子計算機統一發票</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -609,7 +606,7 @@ export function InvoiceForm() {
                       </div>
                       <div className="flex items-center space-x-2">
                         <input type="radio" id="invoice" name="invoiceType" value="invoice" />
-                        <Label htmlFor="invoice">收入</Label>
+                        <Label htmlFor="invoice">發票</Label>
                       </div>
                       <div className="flex items-center space-x-2">
                         <input type="radio" id="substitute" name="invoiceType" value="substitute" />
