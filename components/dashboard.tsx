@@ -70,7 +70,7 @@ const [tasks, setTasks] = useState(pendingTasks)
 const todoItems = [
   { id: 1, title: "預算編列", color: "bg-blue-500" },
   { id: 52, title: "預算審查", color: "bg-green-500" },
-  { id: 23, title: "預算動支", color: "bg-yellow-500" },
+  { id: 23, title: "預算動", color: "bg-yellow-500" },
   { id: 14, title: "預算調整", color: "bg-purple-500" },
   { id: 35, title: "預算核銷", color: "bg-red-500" },
   { id: 46, title: "預算比較", color: "bg-indigo-500" },
@@ -168,40 +168,70 @@ const handleOpenTaskDialog = () => {
   loadTasks()
 }
 
+// 修改為 Tableau 的配色方案
+const chartColors = {
+  // Tableau 10 經典配色
+  blue: '#4E79A7',       // 深藍
+  orange: '#F28E2B',     // 橘色
+  red: '#E15759',        // 紅色
+  teal: '#76B7B2',       // 青綠
+  green: '#59A14F',      // 綠色
+  yellow: '#EDC948',     // 黃色
+  purple: '#B07AA1',     // 紫色
+  pink: '#FF9DA7',       // 粉色
+  brown: '#9C755F',      // 棕色
+  gray: '#BAB0AC',       // 灰色
+  
+  // 擴展配色
+  lightBlue: '#86BCF7',  
+  lightGreen: '#7EC37E',
+  
+  // 用於圖表的主要配色
+  primary: '#4E79A7',    // 使用深藍作為主色
+  secondary: '#59A14F',  // 使用綠色作為輔色
+}
+
+// 修改面積圖配色
 const renderBudgetComparisonChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
     <AreaChart data={budgetComparisonData}>
       <defs>
         <linearGradient id="colorPlanned" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#2563eb" stopOpacity={0.3}/>
-          <stop offset="95%" stopColor="#2563eb" stopOpacity={0}/>
+          <stop offset="5%" stopColor={chartColors.blue} stopOpacity={0.3}/>
+          <stop offset="95%" stopColor={chartColors.blue} stopOpacity={0}/>
         </linearGradient>
         <linearGradient id="colorActual" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
-          <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+          <stop offset="5%" stopColor={chartColors.green} stopOpacity={0.3}/>
+          <stop offset="95%" stopColor={chartColors.green} stopOpacity={0}/>
         </linearGradient>
       </defs>
-      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E5E7EB" />
       <XAxis 
         dataKey="month" 
         axisLine={false}
         tickLine={false}
-        tick={{ fill: '#888888' }}
+        tick={{ fill: '#666666' }}
       />
       <YAxis 
         axisLine={false}
         tickLine={false}
-        tick={{ fill: '#888888' }}
+        tick={{ fill: '#666666' }}
         tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
       />
       <Tooltip 
         formatter={(value) => `${(Number(value) / 1000000).toFixed(2)}M`}
-        labelStyle={{ color: '#888888' }}
+        labelStyle={{ color: '#666666' }}
+        contentStyle={{ 
+          backgroundColor: 'white',
+          border: '1px solid #E5E7EB',
+          borderRadius: '4px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
       />
       <Area 
         type="monotone" 
         dataKey="planned" 
-        stroke="#2563eb" 
+        stroke={chartColors.blue}
         fill="url(#colorPlanned)"
         strokeWidth={2}
         name="預算"
@@ -209,7 +239,7 @@ const renderBudgetComparisonChart = (height: number = 300) => (
       <Area 
         type="monotone" 
         dataKey="actual" 
-        stroke="#10b981" 
+        stroke={chartColors.green}
         fill="url(#colorActual)"
         strokeWidth={2}
         name="實際"
@@ -219,39 +249,46 @@ const renderBudgetComparisonChart = (height: number = 300) => (
   </ResponsiveContainer>
 )
 
+// 修改長條圖配色
 const renderDepartmentBudgetChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
     <BarChart 
       data={departmentBudgetData}
       layout="horizontal"
     >
-      <CartesianGrid strokeDasharray="3 3" />
+      <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
       <XAxis 
         dataKey="name"
         axisLine={false}
         tickLine={false}
-        tick={{ fill: '#888888' }}
+        tick={{ fill: '#666666' }}
       />
       <YAxis 
         axisLine={false}
         tickLine={false}
-        tick={{ fill: '#888888' }}
+        tick={{ fill: '#666666' }}
         tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
       />
       <Tooltip 
         formatter={(value) => `${(Number(value) / 1000).toFixed(1)}k`}
-        labelStyle={{ color: '#888888' }}
+        labelStyle={{ color: '#666666' }}
+        contentStyle={{ 
+          backgroundColor: 'white',
+          border: '1px solid #E5E7EB',
+          borderRadius: '4px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
       />
       <Legend />
       <Bar 
         dataKey="budget" 
-        fill="#4F46E5"
+        fill={chartColors.blue}
         name="預算"
         radius={[4, 4, 0, 0]}
       />
       <Bar 
         dataKey="actual" 
-        fill="#10b981"
+        fill={chartColors.green}
         name="實際"
         radius={[4, 4, 0, 0]}
       />
@@ -259,61 +296,21 @@ const renderDepartmentBudgetChart = (height: number = 300) => (
   </ResponsiveContainer>
 )
 
+// 修改圓餅圖配色
 const projectBudgetData = [
   { 
     name: "實際金額", 
     value: 12430000, 
-    fill: "#10b981",
+    fill: chartColors.green,
   },
   { 
     name: "預算金額", 
     value: 1000000000, 
-    fill: "#4F46E5",
+    fill: chartColors.blue,
   }
 ]
 
-const renderProjectBudgetChart = (height: number = 300) => (
-  <ResponsiveContainer width="100%" height={height}>
-    <RechartsPieChart>
-      <Pie
-        data={projectBudgetData}
-        cx="50%"
-        cy="50%"
-        innerRadius={0}
-        outerRadius={80}
-        paddingAngle={2}
-        dataKey="value"
-        labelLine={{ stroke: '#888888', strokeWidth: 1 }}
-        label={({ name, value, percent }) => {
-          const formattedValue = (value / 1000000).toFixed(1)
-          return `${(percent * 100).toFixed(1)}%`
-        }}
-      >
-        {projectBudgetData.map((entry, index) => (
-          <Cell key={`cell-${index}`} fill={entry.fill} />
-        ))}
-      </Pie>
-      <Tooltip 
-        formatter={(value) => `${(Number(value) / 1000000).toFixed(2)}M`}
-        labelStyle={{ color: '#888888' }}
-      />
-      <Legend 
-        verticalAlign="bottom"
-        height={36}
-        formatter={(value, entry) => {
-          const { payload } = entry as any
-          const percent = (payload.value / (12430000 + 1000000000) * 100).toFixed(1)
-          return `${value} (${percent}%)`
-        }}
-      />
-    </RechartsPieChart>
-  </ResponsiveContainer>
-)
-
-// 添加新的 state 來控制下方的 tab
-const [lowerActiveTab, setLowerActiveTab] = useState("budget-comparison")
-
-// 添加表格數據
+// 修改表格中的顏色提示
 const budgetComparisonTableData = [
   {
     month: 'Jul-23',
@@ -351,6 +348,50 @@ const budgetComparisonTableData = [
     actualAmount: 2300000,
   },
 ]
+
+// 添加圓餅圖渲染函數
+const renderProjectBudgetChart = (height: number = 300) => (
+  <ResponsiveContainer width="100%" height={height}>
+    <RechartsPieChart>
+      <Pie
+        data={projectBudgetData}
+        cx="50%"
+        cy="50%"
+        innerRadius={0}
+        outerRadius={100}
+        paddingAngle={0}
+        dataKey="value"
+        labelLine={{ stroke: '#666666', strokeWidth: 1 }}
+        label={({ name, value, percent }) => {
+          return `${(percent * 100).toFixed(1)}%`
+        }}
+      >
+        {projectBudgetData.map((entry, index) => (
+          <Cell key={`cell-${index}`} fill={entry.fill} />
+        ))}
+      </Pie>
+      <Tooltip 
+        formatter={(value) => `${(Number(value) / 1000000).toFixed(2)}M`}
+        labelStyle={{ color: '#666666' }}
+        contentStyle={{ 
+          backgroundColor: 'white',
+          border: '1px solid #E5E7EB',
+          borderRadius: '4px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+        }}
+      />
+      <Legend 
+        verticalAlign="bottom"
+        height={36}
+        formatter={(value, entry) => {
+          const { payload } = entry as any
+          const percent = (payload.value / (12430000 + 1000000000) * 100).toFixed(1)
+          return `${value} (${percent}%)`
+        }}
+      />
+    </RechartsPieChart>
+  </ResponsiveContainer>
+)
 
 return (
   <div className="flex h-screen bg-gray-50">
@@ -516,110 +557,116 @@ return (
       </header>
 
       {/* Dashboard Content */}
-      <main className="p-6">
-        {/* Updated Tab Navigation */}
-        <div className="border-b mb-6">
-          <div className="flex flex-col">
-            <div className="flex space-x-8">
-              {tabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id)
-                    // 如果是預算管理，預設顯示分析報表
-                    if (tab.id === "budget") {
-                      setActiveSubTab("budget-analysis")
-                    } else {
-                      setActiveSubTab(null)
-                    }
-                  }}
-                  className={`flex items-center gap-2 pb-4 relative ${
-                    activeTab === tab.id 
-                      ? 'text-blue-600' 
-                      : 'text-gray-500 hover:text-gray-700'
-                  }`}
-                >
-                  {tab.icon}
-                  <span>{tab.label}</span>
-                  {activeTab === tab.id && (
-                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 transition-all" />
-                  )}
-                </button>
-              ))}
-            </div>
-            
-            {/* 子標籤導航 */}
-            {activeTab === "budget" && (
-              <div className="flex space-x-4 mt-2 mb-4">
-                {tabs.find(t => t.id === "budget")?.subTabs?.map((subTab) => (
+      <main className="p-6 bg-slate-50">
+        {/* Tab Navigation Card */}
+        <Card className="mb-6 bg-white">
+          <CardContent className="pt-6">
+            <div className="flex flex-col">
+              <div className="flex space-x-8 pb-4 border-b">
+                {tabs.map((tab) => (
                   <button
-                    key={subTab.id}
-                    onClick={() => setActiveSubTab(subTab.id)}
-                    className={`px-3 py-1 rounded-md text-sm ${
-                      activeSubTab === subTab.id
-                        ? 'bg-blue-100 text-blue-600'
-                        : 'text-gray-600 hover:bg-gray-100'
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id)
+                      if (tab.id === "budget") {
+                        setActiveSubTab("budget-analysis")
+                      } else {
+                        setActiveSubTab(null)
+                      }
+                    }}
+                    className={`flex items-center gap-2 relative ${
+                      activeTab === tab.id 
+                        ? 'text-blue-600' 
+                        : 'text-gray-500 hover:text-gray-700'
                     }`}
                   >
-                    {subTab.label}
+                    {tab.icon}
+                    <span>{tab.label}</span>
+                    {activeTab === tab.id && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 transition-all" />
+                    )}
                   </button>
                 ))}
               </div>
-            )}
-          </div>
-        </div>
+              
+              {/* 子標籤導航 */}
+              {activeTab === "budget" && (
+                <div className="flex space-x-4 pt-4">
+                  {tabs.find(t => t.id === "budget")?.subTabs?.map((subTab) => (
+                    <button
+                      key={subTab.id}
+                      onClick={() => setActiveSubTab(subTab.id)}
+                      className={`px-3 py-1 rounded-md text-sm ${
+                        activeSubTab === subTab.id
+                          ? 'bg-blue-100 text-blue-600'
+                          : 'text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      {subTab.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {activeTab === "budget" && activeSubTab === "budget-analysis" && (
           <>
-            <div className="mb-6 space-y-6">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="unit">作業單位</Label>
-                  <Select value={selectedUnit} onValueChange={setSelectedUnit}>
-                    <SelectTrigger id="unit" className="w-full">
-                      <SelectValue placeholder="選擇作業單位" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="富岡機廠">富岡機廠</SelectItem>
-                      <SelectItem value="潮州機廠">潮州機廠</SelectItem>
-                      <SelectItem value="花蓮機廠">花蓮機廠</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+            {/* 篩選條件 Card */}
+            <Card className="mb-6 w-full">
+              <CardContent className="py-3">
+                <div className="flex justify-start">
+                  <div className="space-y-3 w-[340px]">
+                    <div className="flex items-center">
+                      <Label htmlFor="unit" className="w-24">作業單位</Label>
+                      <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+                        <SelectTrigger id="unit" className="w-[240px]">
+                          <SelectValue placeholder="選擇作業單位" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="富岡機廠">富岡機廠</SelectItem>
+                          <SelectItem value="潮州機廠">潮州機廠</SelectItem>
+                          <SelectItem value="花蓮機廠">花蓮機廠</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="account">會計科目</Label>
-                  <Select value={selectedAccount} onValueChange={setSelectedAccount}>
-                    <SelectTrigger id="account" className="w-full">
-                      <SelectValue placeholder="選擇會計科目" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="510206-2809-31F">510206-2809-31F</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                    <div className="flex items-center">
+                      <Label htmlFor="account" className="w-24">會計科目</Label>
+                      <Select value={selectedAccount} onValueChange={setSelectedAccount}>
+                        <SelectTrigger id="account" className="w-[240px]">
+                          <SelectValue placeholder="選擇會計科目" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="510206-2809-31F">510206-2809-31F</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="project">專案計畫編號</Label>
-                  <Select value={selectedProject} onValueChange={setSelectedProject}>
-                    <SelectTrigger id="project" className="w-full">
-                      <SelectValue placeholder="選擇專案計畫編號" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="951113021C141">951113021C141</SelectItem>
-                      <SelectItem value="951113021C142">951113021C142</SelectItem>
-                      <SelectItem value="951113021C143">951113021C143</SelectItem>
-                      <SelectItem value="951113021F143">951113021F143</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <div className="flex items-center">
+                      <Label htmlFor="project" className="w-24">專案計畫</Label>
+                      <Select value={selectedProject} onValueChange={setSelectedProject}>
+                        <SelectTrigger id="project" className="w-[240px]">
+                          <SelectValue placeholder="選擇專案計畫編號" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="951113021C141">951113021C141</SelectItem>
+                          <SelectItem value="951113021C142">951113021C142</SelectItem>
+                          <SelectItem value="951113021C143">951113021C143</SelectItem>
+                          <SelectItem value="951113021F143">951113021F143</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* 圖表區域 */}
             <div className="mt-4 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {/* Account Payable Trend Chart */}
-              <Card className="md:col-span-1 lg:col-span-1">
+              <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
                     <CardTitle className="text-base font-semibold">預算與實際比較趨勢</CardTitle>
@@ -642,7 +689,7 @@ return (
               </Card>
 
               {/* Department Budget Allocation Chart */}
-              <Card className="md:col-span-1 lg:col-span-1">
+              <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
                     <CardTitle className="text-base font-semibold">部門預算與實際比較</CardTitle>
@@ -665,7 +712,7 @@ return (
               </Card>
 
               {/* Project Plan Trend Chart */}
-              <Card className="md:col-span-1 lg:col-span-1">
+              <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
                   <div>
                     <CardTitle className="text-base font-semibold">預算執行率</CardTitle>
@@ -688,205 +735,253 @@ return (
               </Card>
             </div>
 
-            {/* 新增的 tab 和表格區域 */}
-            <div className="mt-8">
-              <div className="border-b">
-                <div className="flex space-x-8">
-                  <button
-                    onClick={() => setLowerActiveTab("budget-comparison")}
-                    className={`pb-4 relative ${
-                      lowerActiveTab === "budget-comparison"
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    預算與實際比較
-                    {lowerActiveTab === "budget-comparison" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setLowerActiveTab("department-comparison")}
-                    className={`pb-4 relative ${
-                      lowerActiveTab === "department-comparison"
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    部門預算與實際比較
-                    {lowerActiveTab === "department-comparison" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setLowerActiveTab("project-trend")}
-                    className={`pb-4 relative ${
-                      lowerActiveTab === "project-trend"
-                        ? 'text-blue-600'
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    專案計畫趨勢
-                    {lowerActiveTab === "project-trend" && (
-                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600" />
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              {/* 表格區域 - 只在選擇預算與實際比較時顯示 */}
-              {lowerActiveTab === "budget-comparison" && (
-                <div className="mt-4">
-                  <Card>
-                    <CardHeader>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <CardTitle className="text-base font-semibold">預算與實際比較明細</CardTitle>
-                          <p className="text-sm text-muted-foreground">
-                            作業單位：{selectedUnit} | 會計科目：{selectedAccount} | 計畫編號：{selectedProject}
-                          </p>
-                        </div>
-                      </div>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="rounded-md border">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead>項目</TableHead>
-                              <TableHead>Jul-23</TableHead>
-                              <TableHead>Aug-23</TableHead>
-                              <TableHead>Sep-23</TableHead>
-                              <TableHead>Oct-23</TableHead>
-                              <TableHead>Nov-23</TableHead>
-                              <TableHead>Dec-23</TableHead>
-                              <TableHead>Jan-24</TableHead>
+            {/* 添加待核簽工作清單對話框 */}
+            <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
+              <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <DialogTitle>待核簽工作清單</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="w-[140px]">單號</TableHead>
+                          <TableHead className="w-[200px]">標題</TableHead>
+                          <TableHead className="w-[100px]">類型</TableHead>
+                          <TableHead className="w-[120px] text-right">金額</TableHead>
+                          <TableHead className="w-[100px]">提交人</TableHead>
+                          <TableHead className="w-[120px]">提交日期</TableHead>
+                          <TableHead className="w-[100px]">狀態</TableHead>
+                          <TableHead className="w-[100px] text-right">操作</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {isLoadingTasks ? (
+                          Array.from({ length: 5 }).map((_, index) => (
+                            <TableRow key={index}>
+                              <TableCell>
+                                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                              </TableCell>
+                              <TableCell>
+                                <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
+                              </TableCell>
+                              <TableCell>
+                                <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="h-4 w-20 bg-gray-200 rounded animate-pulse ml-auto" />
+                              </TableCell>
+                              <TableCell>
+                                <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
+                              </TableCell>
+                              <TableCell>
+                                <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
+                              </TableCell>
+                              <TableCell>
+                                <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse" />
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <div className="h-8 w-16 bg-gray-200 rounded animate-pulse ml-auto" />
+                              </TableCell>
                             </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            <TableRow>
-                              <TableCell className="font-medium">預算金額</TableCell>
-                              {budgetComparisonTableData.map((row) => (
-                                <TableCell key={`budget-${row.month}`}>
-                                  {row.budgetAmount.toLocaleString()}
-                                </TableCell>
-                              ))}
+                          ))
+                        ) : (
+                          tasks.map((task) => (
+                            <TableRow key={task.id}>
+                              <TableCell className="font-medium">{task.id}</TableCell>
+                              <TableCell>{task.title}</TableCell>
+                              <TableCell>{task.type}</TableCell>
+                              <TableCell className="text-right">
+                                {task.amount.toLocaleString()}
+                              </TableCell>
+                              <TableCell>{task.submitter}</TableCell>
+                              <TableCell>{task.submitDate}</TableCell>
+                              <TableCell>
+                                <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800">
+                                  {task.status}
+                                </span>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Link href="/invoice">
+                                  <Button variant="ghost" size="sm">
+                                    處理
+                                  </Button>
+                                </Link>
+                              </TableCell>
                             </TableRow>
-                            <TableRow>
-                              <TableCell className="font-medium">實際金額</TableCell>
-                              {budgetComparisonTableData.map((row) => (
-                                <TableCell key={`actual-${row.month}`}>
-                                  {row.actualAmount.toLocaleString()}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CardContent>
-                  </Card>
+                          ))
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
-              )}
+              </DialogContent>
+            </Dialog>
 
-              {/* 如果需要，可以為其他兩個標籤添加不同的內容 */}
-              {lowerActiveTab === "department-comparison" && (
-                <div className="mt-4">
-                  {/* 部門預算與實際比較的內容 */}
+            {/* 添加展開圖表的對話框 */}
+            <Dialog open={expandedChart === 'budget-comparison'} onOpenChange={() => setExpandedChart(null)}>
+              <DialogContent className="max-w-[900px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <div>
+                    <DialogTitle className="text-base font-semibold">預算與實際比較明細</DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      作業單位：{selectedUnit} | 會計科目：{selectedAccount} | 計畫編號：{selectedProject}
+                    </p>
+                  </div>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="h-[400px]">
+                    {renderBudgetComparisonChart(400)}
+                  </div>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>項目</TableHead>
+                          <TableHead>Jul-23</TableHead>
+                          <TableHead>Aug-23</TableHead>
+                          <TableHead>Sep-23</TableHead>
+                          <TableHead>Oct-23</TableHead>
+                          <TableHead>Nov-23</TableHead>
+                          <TableHead>Dec-23</TableHead>
+                          <TableHead>Jan-24</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell className="font-medium">預算金額</TableCell>
+                          {budgetComparisonTableData.map((row) => (
+                            <TableCell key={`budget-${row.month}`}>
+                              {row.budgetAmount.toLocaleString()}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium">實際金額</TableCell>
+                          {budgetComparisonTableData.map((row) => (
+                            <TableCell key={`actual-${row.month}`}>
+                              {row.actualAmount.toLocaleString()}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
-              )}
+              </DialogContent>
+            </Dialog>
 
-              {lowerActiveTab === "project-trend" && (
-                <div className="mt-4">
-                  {/* 專案計畫趨勢的內容 */}
+            {/* 添加部門預算比較的展開對話框 */}
+            <Dialog open={expandedChart === 'budget'} onOpenChange={() => setExpandedChart(null)}>
+              <DialogContent className="max-w-[900px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <div>
+                    <DialogTitle className="text-base font-semibold">部門預算與實際比較明細</DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      作業單位：{selectedUnit} | 會計科目：{selectedAccount} | 計畫編號：{selectedProject}
+                    </p>
+                  </div>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="h-[400px]">
+                    {renderDepartmentBudgetChart(400)}
+                  </div>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>機廠名稱</TableHead>
+                          <TableHead className="text-right">預算金額</TableHead>
+                          <TableHead className="text-right">實際金額</TableHead>
+                          <TableHead className="text-right">差異金額</TableHead>
+                          <TableHead className="text-right">執行率</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {departmentBudgetData.map((data) => (
+                          <TableRow key={data.name}>
+                            <TableCell>{data.name}</TableCell>
+                            <TableCell className="text-right">{data.budget.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">{data.actual.toLocaleString()}</TableCell>
+                            <TableCell 
+                              className={`text-right ${
+                                data.actual - data.budget > 0 
+                                  ? `text-[${chartColors.red}]`  // 使用 Tableau 的紅色
+                                  : data.actual - data.budget < 0 
+                                    ? `text-[${chartColors.green}]`  // 使用 Tableau 的綠色
+                                    : ''
+                              }`}
+                            >
+                              {(data.actual - data.budget).toLocaleString()}
+                            </TableCell>
+                            <TableCell 
+                              className={`text-right ${
+                                (data.actual / data.budget) < 1 
+                                  ? 'text-red-600' 
+                                  : 'text-green-600'
+                              }`}
+                            >
+                              {((data.actual / data.budget) * 100).toFixed(1)}%
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
-              )}
-            </div>
+              </DialogContent>
+            </Dialog>
+
+            {/* 添加預算執行率的展開對話框 */}
+            <Dialog open={expandedChart === 'project'} onOpenChange={() => setExpandedChart(null)}>
+              <DialogContent className="max-w-[900px] max-h-[80vh] overflow-y-auto">
+                <DialogHeader>
+                  <div>
+                    <DialogTitle className="text-base font-semibold">預算執行率明細</DialogTitle>
+                    <p className="text-sm text-muted-foreground mt-1">
+                      作業單位：{selectedUnit} | 會計科目：{selectedAccount} | 計畫編號：{selectedProject}
+                    </p>
+                  </div>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div className="h-[400px]">
+                    {renderProjectBudgetChart(400)}
+                  </div>
+                  <div className="rounded-md border">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>項目</TableHead>
+                          <TableHead className="text-right">金額</TableHead>
+                          <TableHead className="text-right">比例</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {projectBudgetData.map((data) => (
+                          <TableRow key={data.name}>
+                            <TableCell>{data.name}</TableCell>
+                            <TableCell className="text-right">{data.value.toLocaleString()}</TableCell>
+                            <TableCell className="text-right">
+                              {((data.value / (12430000 + 1000000000)) * 100).toFixed(1)}%
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                        <TableRow>
+                          <TableCell className="font-medium">總計</TableCell>
+                          <TableCell className="text-right font-medium">
+                            {(12430000 + 1000000000).toLocaleString()}
+                          </TableCell>
+                          <TableCell className="text-right font-medium">100%</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
           </>
         )}
-
-        {/* 添加待核簽工作清單對話框 */}
-        <Dialog open={showTaskDialog} onOpenChange={setShowTaskDialog}>
-          <DialogContent className="sm:max-w-[800px] max-h-[80vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>待核簽工作清單</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-[140px]">單號</TableHead>
-                      <TableHead className="w-[200px]">標題</TableHead>
-                      <TableHead className="w-[100px]">類型</TableHead>
-                      <TableHead className="w-[120px] text-right">金額</TableHead>
-                      <TableHead className="w-[100px]">提交人</TableHead>
-                      <TableHead className="w-[120px]">提交日期</TableHead>
-                      <TableHead className="w-[100px]">狀態</TableHead>
-                      <TableHead className="w-[100px] text-right">操作</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {isLoadingTasks ? (
-                      Array.from({ length: 5 }).map((_, index) => (
-                        <TableRow key={index}>
-                          <TableCell>
-                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="h-4 w-32 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="h-4 w-20 bg-gray-200 rounded animate-pulse ml-auto" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="h-4 w-16 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="h-4 w-24 bg-gray-200 rounded animate-pulse" />
-                          </TableCell>
-                          <TableCell>
-                            <div className="h-6 w-16 bg-gray-200 rounded-full animate-pulse" />
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="h-8 w-16 bg-gray-200 rounded animate-pulse ml-auto" />
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      tasks.map((task) => (
-                        <TableRow key={task.id}>
-                          <TableCell className="font-medium">{task.id}</TableCell>
-                          <TableCell>{task.title}</TableCell>
-                          <TableCell>{task.type}</TableCell>
-                          <TableCell className="text-right">
-                            {task.amount.toLocaleString()}
-                          </TableCell>
-                          <TableCell>{task.submitter}</TableCell>
-                          <TableCell>{task.submitDate}</TableCell>
-                          <TableCell>
-                            <span className="inline-flex items-center rounded-full px-2 py-1 text-xs font-medium bg-yellow-100 text-yellow-800">
-                              {task.status}
-                            </span>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <Link href="/invoice">
-                              <Button variant="ghost" size="sm">
-                                處理
-                              </Button>
-                            </Link>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
       </main>
     </div>
   </div>
