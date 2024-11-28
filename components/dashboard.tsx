@@ -459,10 +459,10 @@ const renderDepartmentBudgetChart = (height: number = 300) => (
         axisLine={false}
         tickLine={false}
         tick={{ fill: '#666666' }}
-        tickFormatter={(value) => `${(value / 1000).toFixed(0)}k`}
+        tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
       />
       <Tooltip 
-        formatter={(value) => `${(Number(value) / 1000).toFixed(1)}k`}
+        formatter={(value) => `${(Number(value) / 1000000).toFixed(2)}M`}
         labelStyle={{ color: '#666666' }}
         contentStyle={{ 
           backgroundColor: 'white',
@@ -821,7 +821,7 @@ return (
                     onClick={handleApplyFilter}
                     className="bg-blue-600 text-white hover:bg-blue-700"
                   >
-                    套用篩選
+                    ��用篩選
                   </Button>
                 </div>
               </CardContent>
