@@ -195,6 +195,7 @@ const chartColors = {
 interface BudgetData {
   [key: string]: {
     [key: string]: {
+      month: string;
       planned: number;
       actual: number;
     }[];
