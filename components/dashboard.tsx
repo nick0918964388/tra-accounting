@@ -821,7 +821,7 @@ return (
                     onClick={handleApplyFilter}
                     className="bg-blue-600 text-white hover:bg-blue-700"
                   >
-                    ��用篩選
+                    套用篩選
                   </Button>
                 </div>
               </CardContent>
