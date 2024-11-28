@@ -532,8 +532,8 @@ const renderProjectBudgetChart = (height: number = 300) => (
   </ResponsiveContainer>
 )
 
-// 添加專案計畫對應關係
-const projectsByUnit = {
+// 添加專案計畫對應關係的類型定義
+const projectsByUnit: Record<string, string[]> = {
   "富岡機廠": ["951113021C141"],
   "潮州機廠": ["951113021C142"],
   "花蓮機廠": ["951113021C143"]
