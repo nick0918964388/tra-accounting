@@ -191,10 +191,205 @@ const chartColors = {
   secondary: '#59A14F',  // 使用綠色作為輔色
 }
 
-// 修改面積圖配色
+// 添加新的數據結構和處理函數
+interface BudgetData {
+  [key: string]: {
+    [key: string]: {
+      planned: number;
+      actual: number;
+    }[];
+  };
+}
+
+const budgetDataByUnit: BudgetData = {
+  "富岡機廠": {
+    "951113021C141": [
+      { month: "7月", planned: 15000000, actual: 14500000 },
+      { month: "8月", planned: 16000000, actual: 15800000 },
+      { month: "9月", planned: 15500000, actual: 16000000 },
+      { month: "10月", planned: 17000000, actual: 16500000 },
+      { month: "11月", planned: 18000000, actual: 17500000 },
+      { month: "12月", planned: 22000000, actual: 21000000 },
+      { month: "1月", planned: 20000000, actual: 18000000 },
+    ],
+    "951113021C142": [
+      // 可以添加其他專案的數據...
+    ]
+  },
+  "潮州機廠": {
+    "951113021C142": [
+      { month: "7月", planned: 10000000, actual: 7000000 },
+      { month: "8月", planned: 11000000, actual: 9000000 },
+      { month: "9月", planned: 11500000, actual: 9500000 },
+      { month: "10月", planned: 12000000, actual: 8250000 },
+      { month: "11月", planned: 13000000, actual: 8750000 },
+      { month: "12月", planned: 15000000, actual: 10500000 },
+      { month: "1月", planned: 10000000, actual: 11500000 },
+    ]
+  },
+  "花蓮機廠": {
+    "951113021C143": [  // 添加花蓮機廠的數據
+      { month: "7月", planned: 8000000, actual: 5600000 },   // 80% of 潮州
+      { month: "8月", planned: 8800000, actual: 7200000 },
+      { month: "9月", planned: 9200000, actual: 7600000 },
+      { month: "10月", planned: 9600000, actual: 6600000 },
+      { month: "11月", planned: 10400000, actual: 7000000 },
+      { month: "12月", planned: 12000000, actual: 8400000 },
+      { month: "1月", planned: 8000000, actual: 9200000 },
+    ]
+  }
+}
+
+// 修改處理篩選的函數
+const handleApplyFilter = () => {
+  // 獲取選中單位的數據
+  const unitData = budgetDataByUnit[selectedUnit]?.[selectedProject] || [];
+  
+  // 計算實際金額總和
+  const actualTotal = unitData.reduce((sum, item) => sum + item.actual, 0);
+  const plannedTotal = unitData.reduce((sum, item) => sum + item.planned, 0);
+  const totalBudget = 600000000; // 6億預算
+  const unexecutedAmount = totalBudget - actualTotal; // 未執行金額
+
+  // 計算各機廠的預算和實際金額總和
+  const departmentTotals = {
+    "富岡機廠": budgetDataByUnit["富岡機廠"]["951113021C141"]?.reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    ),
+    "潮州機廠": budgetDataByUnit["潮州機廠"]["951113021C142"]?.reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    ),
+    "花蓮機廠": budgetDataByUnit["花蓮機廠"]["951113021C143"]?.reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    ) // 如果有花蓮機廠的數據也可以加入
+  };
+  
+  // 更新圖表數據
+  setBudgetData({
+    comparisonData: unitData.map(item => ({
+      month: item.month,
+      planned: item.planned,
+      actual: item.actual
+    })),
+    departmentData: [
+      { 
+        name: "富岡機廠", 
+        budget: departmentTotals["富岡機廠"]?.planned || 0, 
+        actual: departmentTotals["富岡機廠"]?.actual || 0 
+      },
+      { 
+        name: "潮州機廠", 
+        budget: departmentTotals["潮州機廠"]?.planned || 0, 
+        actual: departmentTotals["潮州機廠"]?.actual || 0 
+      },
+      { 
+        name: "花蓮機廠", 
+        budget: departmentTotals["花蓮機廠"]?.planned || 0, 
+        actual: departmentTotals["花蓮機廠"]?.actual || 0 
+      }
+    ],
+    projectData: [
+      { 
+        name: "實際執行", 
+        value: actualTotal,
+        fill: chartColors.blue,
+      },
+      { 
+        name: "未執行金額", 
+        value: unexecutedAmount > 0 ? unexecutedAmount : 0,
+        fill: chartColors.secondary,
+      }
+    ]
+  });
+}
+
+// 修改初始狀態設定
+const [budgetData, setBudgetData] = useState(() => {
+  // 獲取富岡機廠的初始數據
+  const initialUnitData = budgetDataByUnit["富岡機廠"]["951113021C141"];
+  const initialActualTotal = initialUnitData.reduce((sum, item) => sum + item.actual, 0);
+  const totalBudget = 600000000;
+  const unexecutedAmount = totalBudget - initialActualTotal;
+
+  // 計算初始的部門數據
+  const initialDepartmentTotals = {
+    "富岡機廠": budgetDataByUnit["富岡機廠"]["951113021C141"].reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    ),
+    "潮州機廠": budgetDataByUnit["潮州機廠"]["951113021C142"].reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    ),
+    "花蓮機廠": budgetDataByUnit["花蓮機廠"]["951113021C143"].reduce(
+      (acc, item) => ({
+        planned: acc.planned + item.planned,
+        actual: acc.actual + item.actual
+      }),
+      { planned: 0, actual: 0 }
+    )
+  };
+
+  return {
+    comparisonData: initialUnitData.map(item => ({
+      month: item.month,
+      planned: item.planned,
+      actual: item.actual
+    })),
+    departmentData: [
+      { 
+        name: "富岡機廠", 
+        budget: initialDepartmentTotals["富岡機廠"].planned, 
+        actual: initialDepartmentTotals["富岡機廠"].actual 
+      },
+      { 
+        name: "潮州機廠", 
+        budget: initialDepartmentTotals["潮州機廠"].planned, 
+        actual: initialDepartmentTotals["潮州機廠"].actual 
+      },
+      { 
+        name: "花蓮機廠", 
+        budget: initialDepartmentTotals["花蓮機廠"].planned, 
+        actual: initialDepartmentTotals["花蓮機廠"].actual 
+      }
+    ],
+    projectData: [
+      { 
+        name: "實際執行", 
+        value: initialActualTotal,
+        fill: chartColors.blue,
+      },
+      { 
+        name: "未執行金額", 
+        value: unexecutedAmount,
+        fill: chartColors.secondary,
+      }
+    ]
+  };
+});
+
+// 修改圖表渲染函數，使用 budgetData 中的數據
 const renderBudgetComparisonChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
-    <AreaChart data={budgetComparisonData}>
+    <AreaChart data={budgetData.comparisonData}>
       <defs>
         <linearGradient id="colorPlanned" x1="0" y1="0" x2="0" y2="1">
           <stop offset="5%" stopColor={chartColors.blue} stopOpacity={0.3}/>
@@ -249,13 +444,9 @@ const renderBudgetComparisonChart = (height: number = 300) => (
   </ResponsiveContainer>
 )
 
-// 修改長條圖配色
 const renderDepartmentBudgetChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
-    <BarChart 
-      data={departmentBudgetData}
-      layout="horizontal"
-    >
+    <BarChart data={budgetData.departmentData}>
       <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
       <XAxis 
         dataKey="name"
@@ -296,65 +487,11 @@ const renderDepartmentBudgetChart = (height: number = 300) => (
   </ResponsiveContainer>
 )
 
-// 修改圓餅圖配色
-const projectBudgetData = [
-  { 
-    name: "實際金額", 
-    value: 12430000, 
-    fill: chartColors.green,
-  },
-  { 
-    name: "預算金額", 
-    value: 1000000000, 
-    fill: chartColors.blue,
-  }
-]
-
-// 修改表格中的顏色提示
-const budgetComparisonTableData = [
-  {
-    month: 'Jul-23',
-    budgetAmount: 1500000,
-    actualAmount: 1450000,
-  },
-  {
-    month: 'Aug-23',
-    budgetAmount: 1600000,
-    actualAmount: 1580000,
-  },
-  {
-    month: 'Sep-23',
-    budgetAmount: 1550000,
-    actualAmount: 1600000,
-  },
-  {
-    month: 'Oct-23',
-    budgetAmount: 1700000,
-    actualAmount: 1650000,
-  },
-  {
-    month: 'Nov-23',
-    budgetAmount: 1800000,
-    actualAmount: 1750000,
-  },
-  {
-    month: 'Dec-23',
-    budgetAmount: 2200000,
-    actualAmount: 2100000,
-  },
-  {
-    month: 'Jan-24',
-    budgetAmount: 2500000,
-    actualAmount: 2300000,
-  },
-]
-
-// 添加圓餅圖渲染函數
 const renderProjectBudgetChart = (height: number = 300) => (
   <ResponsiveContainer width="100%" height={height}>
     <RechartsPieChart>
       <Pie
-        data={projectBudgetData}
+        data={budgetData.projectData}
         cx="50%"
         cy="50%"
         innerRadius={0}
@@ -366,7 +503,7 @@ const renderProjectBudgetChart = (height: number = 300) => (
           return `${(percent * 100).toFixed(1)}%`
         }}
       >
-        {projectBudgetData.map((entry, index) => (
+        {budgetData.projectData.map((entry, index) => (
           <Cell key={`cell-${index}`} fill={entry.fill} />
         ))}
       </Pie>
@@ -385,13 +522,21 @@ const renderProjectBudgetChart = (height: number = 300) => (
         height={36}
         formatter={(value, entry) => {
           const { payload } = entry as any
-          const percent = (payload.value / (12430000 + 1000000000) * 100).toFixed(1)
+          const total = budgetData.projectData.reduce((sum, item) => sum + item.value, 0)
+          const percent = (payload.value / total * 100).toFixed(1)
           return `${value} (${percent}%)`
         }}
       />
     </RechartsPieChart>
   </ResponsiveContainer>
 )
+
+// 添加專案計畫對應關係
+const projectsByUnit = {
+  "富岡機廠": ["951113021C141"],
+  "潮州機廠": ["951113021C142"],
+  "花蓮機廠": ["951113021C143"]
+}
 
 return (
   <div className="flex h-screen bg-gray-50">
@@ -616,11 +761,18 @@ return (
             {/* 篩選條件 Card */}
             <Card className="mb-6 w-full">
               <CardContent className="py-3">
-                <div className="flex justify-start">
+                <div className="flex items-start gap-4">  {/* 改為 flex 並添加 gap */}
                   <div className="space-y-3 w-[340px]">
                     <div className="flex items-center">
                       <Label htmlFor="unit" className="w-24">作業單位</Label>
-                      <Select value={selectedUnit} onValueChange={setSelectedUnit}>
+                      <Select 
+                        value={selectedUnit} 
+                        onValueChange={(value) => {
+                          setSelectedUnit(value);
+                          // 自動選擇對應的專案計畫
+                          setSelectedProject(projectsByUnit[value][0]);
+                        }}
+                      >
                         <SelectTrigger id="unit" className="w-[240px]">
                           <SelectValue placeholder="選擇作業單位" />
                         </SelectTrigger>
@@ -646,19 +798,30 @@ return (
 
                     <div className="flex items-center">
                       <Label htmlFor="project" className="w-24">專案計畫</Label>
-                      <Select value={selectedProject} onValueChange={setSelectedProject}>
+                      <Select 
+                        value={selectedProject} 
+                        onValueChange={setSelectedProject}
+                      >
                         <SelectTrigger id="project" className="w-[240px]">
                           <SelectValue placeholder="選擇專案計畫編號" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="951113021C141">951113021C141</SelectItem>
-                          <SelectItem value="951113021C142">951113021C142</SelectItem>
-                          <SelectItem value="951113021C143">951113021C143</SelectItem>
-                          <SelectItem value="951113021F143">951113021F143</SelectItem>
+                          {/* 根據選擇的作業單位動態顯示對應的專案計畫 */}
+                          {projectsByUnit[selectedUnit]?.map((project) => (
+                            <SelectItem key={project} value={project}>
+                              {project}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
+                  <Button 
+                    onClick={handleApplyFilter}
+                    className="bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    套用篩選
+                  </Button>
                 </div>
               </CardContent>
             </Card>
@@ -851,17 +1014,49 @@ return (
                       <TableBody>
                         <TableRow>
                           <TableCell className="font-medium">預算金額</TableCell>
-                          {budgetComparisonTableData.map((row) => (
+                          {budgetData.comparisonData.map((row) => (
                             <TableCell key={`budget-${row.month}`}>
-                              {row.budgetAmount.toLocaleString()}
+                              {row.planned.toLocaleString()}
                             </TableCell>
                           ))}
                         </TableRow>
                         <TableRow>
                           <TableCell className="font-medium">實際金額</TableCell>
-                          {budgetComparisonTableData.map((row) => (
+                          {budgetData.comparisonData.map((row) => (
                             <TableCell key={`actual-${row.month}`}>
-                              {row.actualAmount.toLocaleString()}
+                              {row.actual.toLocaleString()}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium">差異金額</TableCell>
+                          {budgetData.comparisonData.map((row) => (
+                            <TableCell 
+                              key={`diff-${row.month}`}
+                              className={`text-right ${
+                                row.actual - row.planned > 0 
+                                  ? 'text-rose-600'
+                                  : row.actual - row.planned < 0 
+                                    ? 'text-emerald-600'
+                                    : ''
+                              }`}
+                            >
+                              {(row.actual - row.planned).toLocaleString()}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                        <TableRow>
+                          <TableCell className="font-medium">達成率</TableCell>
+                          {budgetData.comparisonData.map((row) => (
+                            <TableCell 
+                              key={`rate-${row.month}`}
+                              className={`text-right ${
+                                (row.actual / row.planned) < 1 
+                                  ? 'text-rose-600'
+                                  : 'text-emerald-600'
+                              }`}
+                            >
+                              {((row.actual / row.planned) * 100).toFixed(1)}%
                             </TableCell>
                           ))}
                         </TableRow>
@@ -958,19 +1153,19 @@ return (
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                        {projectBudgetData.map((data) => (
+                        {budgetData.projectData.map((data) => (
                           <TableRow key={data.name}>
                             <TableCell>{data.name}</TableCell>
                             <TableCell className="text-right">{data.value.toLocaleString()}</TableCell>
                             <TableCell className="text-right">
-                              {((data.value / (12430000 + 1000000000)) * 100).toFixed(1)}%
+                              {((data.value / budgetData.projectData.reduce((sum, item) => sum + item.value, 0)) * 100).toFixed(1)}%
                             </TableCell>
                           </TableRow>
                         ))}
                         <TableRow>
                           <TableCell className="font-medium">總計</TableCell>
                           <TableCell className="text-right font-medium">
-                            {(12430000 + 1000000000).toLocaleString()}
+                            {budgetData.projectData.reduce((sum, item) => sum + item.value, 0).toLocaleString()}
                           </TableCell>
                           <TableCell className="text-right font-medium">100%</TableCell>
                         </TableRow>
