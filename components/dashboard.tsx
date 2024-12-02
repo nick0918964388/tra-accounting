@@ -175,7 +175,11 @@ const tabs = [
     id: "apply", 
     label: "申請作業", 
     icon: <ClipboardList className="h-4 w-4" />,
-    subTabs: [] // 如果申請作業沒有子選單，可以保持空陣列
+    subTabs: [
+      { id: "budget-request", label: "動支請示" },
+      { id: "expense-verification", label: "費用核銷" },
+      { id: "payment-request", label: "請款" }
+    ]
   }
 ] as const;
 
@@ -611,9 +615,11 @@ return (
                       variant="ghost" 
                       className="w-full justify-start"
                       onClick={() => {
-                        setActiveTab(item.id)
+                        setActiveTab("budget")  // 設置主標籤為預算管理
+                        setActiveSubTab(item.id)  // 設置子標籤
                         if (item.id === "budget-analysis") {
-                          // 處理分析報表的邏輯
+                          // 如果點選的是分析報表，確保顯示相關內容
+                          handleApplyFilter()  // 觸發篩選以更新圖表
                         }
                       }}
                     >
@@ -640,10 +646,46 @@ return (
             <CollapsibleContent className="ml-4">
               {sidebarOpen && (
                 <>                                                    
-                  <Button variant="ghost" className="w-full justify-start">應付帳款</Button>
-                  <Button variant="ghost" className="w-full justify-start">付款作業</Button>
-                  <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
-                  <Button variant="ghost" className="w-full justify-start">銀行主檔維護</Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("payable")
+                      setActiveSubTab("payable-main")
+                    }}
+                  >
+                    應付帳款
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("payable")
+                      setActiveSubTab("payment-process")
+                    }}
+                  >
+                    付款作業
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("payable")
+                      setActiveSubTab("vendor-management")
+                    }}
+                  >
+                    廠商管理
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("payable")
+                      setActiveSubTab("bank-maintenance")
+                    }}
+                  >
+                    銀行主檔維護
+                  </Button>
                 </>
               )}
             </CollapsibleContent>
@@ -663,14 +705,46 @@ return (
             <CollapsibleContent className="ml-4">
               {sidebarOpen && (
                 <>                  
-                  <Link href="/invoice" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("receivable")
+                      setActiveSubTab("receivable-main")
+                    }}
+                  >
                     應收帳款
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" className="w-full justify-start">收款、沖帳作業</Button>
-                  <Button variant="ghost" className="w-full justify-start">客戶管理</Button>
-                  <Button variant="ghost" className="w-full justify-start">催收作業</Button>
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("receivable")
+                      setActiveSubTab("collection-process")
+                    }}
+                  >
+                    收款、沖帳作業
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("receivable")
+                      setActiveSubTab("customer-management")
+                    }}
+                  >
+                    客戶管理
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("receivable")
+                      setActiveSubTab("collection-management")
+                    }}
+                  >
+                    催收作業
+                  </Button>
                 </>
               )}
             </CollapsibleContent>
@@ -690,19 +764,177 @@ return (
             <CollapsibleContent className="ml-4">
               {sidebarOpen && (
                 <>                  
-                  <Link href="/invoice" className="w-full">
-                    <Button variant="ghost" className="w-full justify-start">
-                      總帳傳票維護
-                    </Button>
-                  </Link>
-                  <Button variant="ghost" className="w-full justify-start">科目明細、餘額查詢</Button>
-                  <Button variant="ghost" className="w-full justify-start">總帳主檔維護</Button>
-                  <Button variant="ghost" className="w-full justify-start">總帳開關帳期間</Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("ledger")
+                      setActiveSubTab("voucher-maintenance")
+                    }}
+                  >
+                    總帳傳票維護
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("ledger")
+                      setActiveSubTab("account-query")
+                    }}
+                  >
+                    科目明細、餘額查詢
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("ledger")
+                      setActiveSubTab("ledger-maintenance")
+                    }}
+                  >
+                    總帳主檔維護
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("ledger")
+                      setActiveSubTab("ledger-period")
+                    }}
+                  >
+                    總帳開關帳期間
+                  </Button>
                 </>
               )}
             </CollapsibleContent>
           </Collapsible>
           
+          {/* 發票管理 */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+                <Receipt className="h-4 w-4" />
+                {sidebarOpen && (
+                  <>
+                    <span className="flex-1 text-left">發票管理</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="ml-4">
+              {sidebarOpen && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("invoice")
+                      setActiveSubTab("invoice-maintenance")
+                    }}
+                  >
+                    發票主檔維護
+                  </Button>
+                  <Link href="/invoice" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start">
+                      進項發票作業
+                    </Button>
+                  </Link>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("invoice")
+                      setActiveSubTab("output-vat")
+                    }}
+                  >
+                    銷項發票作業
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("invoice")
+                      setActiveSubTab("zero-rate")
+                    }}
+                  >
+                    零稅率作業
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("invoice")
+                      setActiveSubTab("invoice-period")
+                    }}
+                  >
+                    發票開關帳期間
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("invoice")
+                      setActiveSubTab("vat-declaration")
+                    }}
+                  >
+                    發票申報作業
+                  </Button>
+                </>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
+
+          {/* 申請作業 */}
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+                <ClipboardList className="h-4 w-4" />
+                {sidebarOpen && (
+                  <>
+                    <span className="flex-1 text-left">申請作業</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="ml-4">
+              {sidebarOpen && (
+                <>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("apply")
+                      setActiveSubTab("budget-request")
+                    }}
+                  >
+                    動支請示
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("apply")
+                      setActiveSubTab("expense-verification")
+                    }}
+                  >
+                    費用核銷
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    className="w-full justify-start"
+                    onClick={() => {
+                      setActiveTab("apply")
+                      setActiveSubTab("payment-request")
+                    }}
+                  >
+                    請款
+                  </Button>
+                </>
+              )}
+            </CollapsibleContent>
+          </Collapsible>
         </nav>
       </div>
     </div>
@@ -905,7 +1137,28 @@ return (
                   {renderBudgetComparisonChart()}
                 </CardContent>
               </Card>
-
+              {/* Project Plan Trend Chart */}
+              <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <div>
+                    <CardTitle className="text-base font-semibold">預算執行率</CardTitle>
+                    <p className="text-sm text-muted-foreground">計畫編號: 951113021C141</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setExpandedChart('project')}
+                    >
+                      <Maximize2 className="h-4 w-4" />
+                    </Button>
+                    <PieChartIcon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                </CardHeader>
+                <CardContent className="h-[300px]">
+                  {renderProjectBudgetChart()}
+                </CardContent>
+              </Card>
               {/* Department Budget Allocation Chart */}
               <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
                 <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -929,28 +1182,7 @@ return (
                 </CardContent>
               </Card>
 
-              {/* Project Plan Trend Chart */}
-              <Card className="md:col-span-1 lg:col-span-1 bg-white shadow-sm">
-                <CardHeader className="flex flex-row items-center justify-between pb-2">
-                  <div>
-                    <CardTitle className="text-base font-semibold">預算執行率</CardTitle>
-                    <p className="text-sm text-muted-foreground">計畫編號: 951113021C141</p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setExpandedChart('project')}
-                    >
-                      <Maximize2 className="h-4 w-4" />
-                    </Button>
-                    <PieChartIcon className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                </CardHeader>
-                <CardContent className="h-[300px]">
-                  {renderProjectBudgetChart()}
-                </CardContent>
-              </Card>
+              
             </div>
 
             {/* 添加待核簽工作清單對話框 */}
