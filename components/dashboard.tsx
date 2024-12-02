@@ -102,15 +102,13 @@ const projectPlanData = [
   { month: "1月", amount: 1500000, average: 835714 },
 ]
 
-const budgetSubItems = [
-  { id: "budget-maintain", label: "預算維護" },
-  { id: "budget-planning", label: "預算編列" },
-  { id: "budget-allocation", label: "預算分配" },
+const budgetSubItems = [  
+  { id: "budget-planning", label: "預算編列" },  
   { id: "budget-execution", label: "預算動支" },
   { id: "budget-verification", label: "預算核銷" },
   { id: "budget-adjustment", label: "預算調整" },
-  { id: "budget-review", label: "預算審核" },
-  { id: "budget-analysis", label: "比較、分析報表" },
+  { id: "budget-review", label: "預算審查" },
+  { id: "budget-analysis", label: "分析、比較報表" },
 ]
 
 const tabs = [
@@ -118,38 +116,68 @@ const tabs = [
     id: "budget", 
     label: "預算管理", 
     icon: <FileText className="h-4 w-4" />,
-    subTabs: [
-      { id: "budget-maintain", label: "預算維護" },
-      { id: "budget-planning", label: "預算編列" },
-      { id: "budget-allocation", label: "預算分配" },
+    subTabs: [      
+      { id: "budget-planning", label: "預算編列" },      
       { id: "budget-execution", label: "預算動支" },
       { id: "budget-verification", label: "預算核銷" },
       { id: "budget-adjustment", label: "預算調整" },
-      { id: "budget-review", label: "預算審核" },
-      { id: "budget-analysis", label: "比較、分析報表" },
+      { id: "budget-review", label: "預算審查" },
+      { id: "budget-analysis", label: "分析、比較報表" },
     ]
   },
   { 
     id: "payable", 
     label: "應付帳款管理", 
-    icon: <Receipt className="h-4 w-4" /> 
+    icon: <Receipt className="h-4 w-4" />,
+    subTabs: [
+      { id: "payable-main", label: "應付帳款" },
+      { id: "payment-process", label: "付款作業" },
+      { id: "vendor-management", label: "廠商管理" },
+      { id: "bank-maintenance", label: "銀行主檔維護" }
+    ]
   },
   { 
     id: "receivable", 
     label: "應收帳款管理", 
-    icon: <CreditCard className="h-4 w-4" /> 
+    icon: <CreditCard className="h-4 w-4" />,
+    subTabs: [
+      { id: "receivable-main", label: "應收帳款" },
+      { id: "collection-process", label: "收款、沖帳作業" },
+      { id: "customer-management", label: "客戶管理" },
+      { id: "collection-management", label: "催收作業" }
+    ]
   },
   { 
     id: "ledger", 
     label: "總帳管理", 
-    icon: <BookOpen className="h-4 w-4" /> 
+    icon: <BookOpen className="h-4 w-4" />,
+    subTabs: [
+      { id: "voucher-maintenance", label: "總帳傳票維護" },
+      { id: "account-query", label: "科目明細、餘額查詢" },
+      { id: "ledger-maintenance", label: "總帳主檔維護" },
+      { id: "ledger-period", label: "總帳開關帳期間" }
+    ]
   },
   { 
     id: "invoice", 
     label: "發票管理", 
-    icon: <BookOpen className="h-4 w-4" /> 
+    icon: <Receipt className="h-4 w-4" />,
+    subTabs: [
+      { id: "invoice-maintenance", label: "發票主檔維護" },
+      { id: "input-vat", label: "進項發票作業" },
+      { id: "output-vat", label: "銷項發票作業" },
+      { id: "zero-rate", label: "零稅率作業" },
+      { id: "invoice-period", label: "發票開關帳期間" },
+      { id: "vat-declaration", label: "發票申報作業" }
+    ]
   },
-]
+  { 
+    id: "apply", 
+    label: "申請作業", 
+    icon: <ClipboardList className="h-4 w-4" />,
+    subTabs: [] // 如果申請作業沒有子選單，可以保持空陣列
+  }
+] as const;
 
 const [activeSubTab, setActiveSubTab] = useState<string | null>("budget-analysis")
 
@@ -612,17 +640,41 @@ return (
             <CollapsibleContent className="ml-4">
               {sidebarOpen && (
                 <>                                                    
-                  <Button variant="ghost" className="w-full justify-start">應付立帳</Button>
+                  <Button variant="ghost" className="w-full justify-start">應付帳款</Button>
                   <Button variant="ghost" className="w-full justify-start">付款作業</Button>
                   <Button variant="ghost" className="w-full justify-start">廠商管理</Button>
+                  <Button variant="ghost" className="w-full justify-start">銀行主檔維護</Button>
                 </>
               )}
             </CollapsibleContent>
-          </Collapsible>
-          <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
-            <CreditCard className="h-4 w-4" />
-            {sidebarOpen && <span>應收帳款管理</span>}
-          </Button>          
+          </Collapsible>         
+          <Collapsible>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
+                <Receipt className="h-4 w-4" />
+                {sidebarOpen && (
+                  <>
+                    <span className="flex-1 text-left">應收帳款管理</span>
+                    <ChevronDown className="h-4 w-4" />
+                  </>
+                )}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="ml-4">
+              {sidebarOpen && (
+                <>                  
+                  <Link href="/invoice" className="w-full">
+                    <Button variant="ghost" className="w-full justify-start">
+                    應收帳款
+                    </Button>
+                  </Link>
+                  <Button variant="ghost" className="w-full justify-start">收款、沖帳作業</Button>
+                  <Button variant="ghost" className="w-full justify-start">客戶管理</Button>
+                  <Button variant="ghost" className="w-full justify-start">催收作業</Button>
+                </>
+              )}
+            </CollapsibleContent>
+          </Collapsible>          
           <Collapsible>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" className={`w-full justify-start gap-2 ${!sidebarOpen && 'justify-center'}`}>
@@ -640,10 +692,12 @@ return (
                 <>                  
                   <Link href="/invoice" className="w-full">
                     <Button variant="ghost" className="w-full justify-start">
-                      發票管理
+                      總帳傳票維護
                     </Button>
                   </Link>
-                  
+                  <Button variant="ghost" className="w-full justify-start">科目明細、餘額查詢</Button>
+                  <Button variant="ghost" className="w-full justify-start">總帳主檔維護</Button>
+                  <Button variant="ghost" className="w-full justify-start">總帳開關帳期間</Button>
                 </>
               )}
             </CollapsibleContent>
@@ -736,9 +790,9 @@ return (
               </div>
               
               {/* 子標籤導航 */}
-              {activeTab === "budget" && (
+              {activeTab && (
                 <div className="flex space-x-4 pt-4">
-                  {tabs.find(t => t.id === "budget")?.subTabs?.map((subTab) => (
+                  {tabs.find(t => t.id === activeTab)?.subTabs?.map((subTab) => (
                     <button
                       key={subTab.id}
                       onClick={() => setActiveSubTab(subTab.id)}
