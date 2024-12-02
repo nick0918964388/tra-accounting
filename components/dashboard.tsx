@@ -335,15 +335,16 @@ const handleApplyFilter = () => {
     ],
     projectData: [
       { 
-        name: "實際執行", 
-        value: actualTotal,
+        name: "未執行金額", 
+        value: unexecutedAmount > 0 ? unexecutedAmount : 0,
         fill: chartColors.blue,
       },
       { 
-        name: "未執行金額", 
-        value: unexecutedAmount > 0 ? unexecutedAmount : 0,
+        name: "實際執行", 
+        value: actualTotal,
         fill: chartColors.secondary,
-      }
+      },
+      
     ]
   });
 }
@@ -406,15 +407,16 @@ const [budgetData, setBudgetData] = useState(() => {
     ],
     projectData: [
       { 
-        name: "實際執行", 
-        value: initialActualTotal,
+        name: "未執行金額", 
+        value: unexecutedAmount,
         fill: chartColors.blue,
       },
       { 
-        name: "未執行金額", 
-        value: unexecutedAmount,
+        name: "實際執行", 
+        value: initialActualTotal,
         fill: chartColors.secondary,
       }
+      
     ]
   };
 });
