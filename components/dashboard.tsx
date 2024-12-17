@@ -87,9 +87,9 @@ const budgetComparisonData = [
 ]
 
 const departmentBudgetData = [
-  { name: "富岡機廠", budget: 350000, actual: 320000 },
-  { name: "潮州機廠", budget: 320000, actual: 310000 },
-  { name: "花蓮機廠", budget: 280000, actual: 260000 },
+  { name: "富岡機廠", budget: 123500000, actual: 119300000 },
+  { name: "潮州機廠", budget: 82500000, actual: 64500000 },
+  { name: "花蓮機廠", budget: 66000000, actual: 51600000 },
 ]
 
 const projectPlanData = [
